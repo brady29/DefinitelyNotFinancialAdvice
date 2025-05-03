@@ -1,73 +1,99 @@
-# api_fast.py  ------------------------------------------------------------
+#!/usr/bin/env python3
 """
-FastAPI wrapper that exposes a single endpoint:
+api_fast.py
+===========
 
-    GET /truth/latest?n=5    →  JSON array of the n most‑recent Trump Truths
+FastAPI server that exposes:
 
-Dependencies (already in requirements.txt):
-    fastapi
-    uvicorn[standard]
-    python-dotenv
-    beautifulsoup4
-    git+https://github.com/stanfordio/truthbrush.git
+    • GET /truth/latest?n=20        → newest Trump Truths
+    • GET /dnfa/latest?n=10         → newest posts from our demo account
+
+Run (dev):
+
+    uvicorn backend.api_fast:app --reload
 """
 
-from typing import List, Dict
+from pathlib import Path
+from collections import deque
+from typing import List, Dict, Optional
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+import json                      # ← add this line
 
-from backend.fetch_truths_api import fetch_truths       # <- your helper function
-# OPTIONAL: background live ticker
-# from threading import Thread
-# from live_ticker import main as ticker_main
+
+# Relative imports (dot = same package)
+from .fetch_truths_api import fetch_truths
+from .our_fetch_api  import fetch_own     # on‑demand for our account
 
 # --------------------------------------------------------------------------- #
-# FastAPI app setup
+# FastAPI setup
 # --------------------------------------------------------------------------- #
 
 app = FastAPI(
-    title="Tweet‑to‑Tick API",
-    description="Serves Trump Truth Social posts for the front‑end",
-    version="0.1.0",
+    title="Truth‑to‑Tick API",
+    version="0.2.0",
+    description="Serves Truth Social posts for the front‑end demo.",
 )
 
-# Allow any origin during dev
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"],    # allow all during dev
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 # --------------------------------------------------------------------------- #
-# (Optional) launch the live_ticker in a background thread
+# Helpers
 # --------------------------------------------------------------------------- #
-# def start_ticker():
-#     """Append new posts to trump_truths_all.jsonl every 60 s."""
-#     Thread(target=ticker_main, daemon=True).start()
-#
-# start_ticker()
+
+DNFA_FILE = Path("dnfa_truths.jsonl")      # written by our_live_ticker.py
+
+def tail_jsonl(path: Path, n: int) -> List[Dict]:
+    """Return the last *n* lines of a JSONL file as a list of dicts."""
+    dq: deque = deque(maxlen=n)
+    if not path.exists():
+        return []
+    with path.open("r", encoding="utf-8") as fp:
+        for line in fp:
+            dq.append(json.loads(line))
+    return list(dq)
 
 # --------------------------------------------------------------------------- #
 # Routes
 # --------------------------------------------------------------------------- #
 
-from typing import Optional, List, Dict
-from fastapi import FastAPI, HTTPException, Query
-
 @app.get("/truth/latest", response_model=List[Dict])
 def latest_truths(
     n: Optional[int] = Query(
-        None, gt=0, le=1000,
-        description="How many posts (omit for ALL ≈ 26 k posts)"
+        5, gt=0, le=1000,
+        description="Number of posts to return (omit for ALL ≈ 26 k)"
     )
 ):
     """
-    GET /truth/latest        → returns ALL posts
-    GET /truth/latest?n=50   → returns 50 newest posts
+    Newest Truths from @realDonaldTrump.
     """
     try:
-        return fetch_truths(n_posts=n)   # None means fetch all
+        return fetch_truths(n_posts=n)
     except Exception as err:
-        raise HTTPException(status_code=500, detail=str(err))
+        raise HTTPException(status_code=503, detail=str(err))
+
+
+@app.get("/dnfa/latest", response_model=List[Dict])
+def dnfa_latest(
+    n: int = Query(5, gt=0, le=50,
+                   description="Newest posts from our demo account")
+):
+    """
+    Latest posts from @DefinitelyNotFinancialAdvice.
+
+    • First tries the ticker file (dnfa_truths.jsonl)
+    • Falls back to a live API pull if ticker hasn’t run yet
+    """
+    if DNFA_FILE.exists() and DNFA_FILE.stat().st_size:
+        return tail_jsonl(DNFA_FILE, n)
+    # fallback live pull (small n so we don’t rate‑limit)
+    try:
+        return fetch_own(n)
+    except Exception as err:
+        raise HTTPException(status_code=503, detail=str(err))
