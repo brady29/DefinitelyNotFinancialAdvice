@@ -1,5 +1,4 @@
 import * as React from 'react';
-import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
@@ -7,19 +6,20 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { blue } from '@mui/material/colors';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import ShowChartIcon from '@mui/icons-material/ShowChart';
 
-const bull = (
-  <Box
-    component="span"
-    sx={{ display: 'inline-block', mx: '2px', transform: 'scale(0.8)' }}
-  >
-    •
-  </Box>
-);
 
-export default function TruthTable(truths) {
+export default function TruthTable(truthArg) {
+    const [currentDisplay, updateDisplay] = React.useState("main");
+    const stockList = ['NVIDIA', 'Apple', 'Amazon', 'Microsoft'];
+    const [hover, updateHover] = React.useState("");
 
-    // const truthArray = truths["truths"]["truths"];
+    // let truthArray = truthArg["truths"]["truths"];
     let date = new Date();
     const truthArray = [
         {
@@ -32,7 +32,7 @@ export default function TruthTable(truths) {
         },
         {
             "created_at" : date.toJSON(),
-            "text" : "sample text 3",
+            "text" : "sample text 3 with lots of shit im just testing the styling and what not of this thannnggggggg i gotta keep writing shit in order to mfing fill up the damn fucking shit ass space hijo de tu chingada madre este proyecto es la verga neta weyyyy",
         },
         {
             "created_at" : date.toJSON(),
@@ -44,27 +44,49 @@ export default function TruthTable(truths) {
         }
     ]
 
+    const [truths, updateTruths] = React.useState(truthArray);
+
     const theme = createTheme({
         palette: {
             secondary: blue,
         },
     });
 
-    console.log(truthArray);
-
     return (
         <>
+        <div className="sidebar">
+            <List>
+                {stockList.map((stock, index) => (
+                    <ListItem onClick={() => updateDisplay((currentDisplay != stock) ? stock : "main")} id={`${stock}`} 
+                            onMouseOver={() => updateHover(stock)}
+                            onMouseLeave={() => updateHover("")}
+                            key={index} disablePadding
+                            style={{
+                                    background: (hover == stock) ? '#7b7b87' :
+                                    (currentDisplay == stock) ? '#1515bf' : 'transparent'
+                                }}>
+                        <ListItemButton>
+                        <ListItemIcon>
+                            <ShowChartIcon />
+                        </ListItemIcon>
+                        <ListItemText primary={stock} />
+                        </ListItemButton>
+                    </ListItem>
+                ))}
+            </List>
+        </div>
+        <div id="main" style={{display: (currentDisplay == "main") ? '' : 'none'}}>
             <h1>Trump's Truths</h1>
             <div className="truth">
                 <ThemeProvider theme={theme}>
-                {truthArray.map((element, index) => (
+                {truths.map((truth, index) => (
                     <Card key={index} className="cards" sx={{ minWidth: 275 }}>
                         <CardContent>
                             <Typography gutterBottom sx={{ fontSize: 14 }}>
-                            {Date(element["created_at"])}
+                            {Date(truth["created_at"])}
                             </Typography>
                             <Typography variant="body2">
-                                {element["text"]}
+                                {truth["text"]}
                             </Typography>
                         </CardContent>
                         <CardActions>
@@ -74,6 +96,12 @@ export default function TruthTable(truths) {
                 ))}
                 </ThemeProvider>
             </div>
+        </div>
+        <div id="stock" style={{display: (currentDisplay == "main") ? 'none' : ''}}>
+            <h1>{currentDisplay}</h1>
+            <div className="truth">
+            </div>
+        </div>
         </>
     );
 }
