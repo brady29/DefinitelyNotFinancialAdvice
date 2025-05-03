@@ -38,6 +38,44 @@ function App() {
     }
   };
 
+  const handleAddStock = async (stock) => {
+    try {
+      const response = await fetch('http://localhost:8000/portfolio/add', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ stock }),
+      });
+      if (response.ok) {
+        fetchPortfolioData();
+      } else {
+        console.error('Error adding stock:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error adding stock:', error);
+    }
+  };
+
+  const handleRemoveStock = async (stock) => {
+    try {
+      const response = await fetch('http://localhost:8000/portfolio/remove', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ stock }),
+      });
+      if (response.ok) {
+        fetchPortfolioData();
+      } else {
+        console.error('Error removing stock:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error removing stock:', error);
+    }
+  };
+
   return (
     <>
       <div>
@@ -63,9 +101,20 @@ function App() {
           {portfolioData.map((stock) => (
             <li key={stock} onClick={() => handleStockSelection(stock)}>
               {stock}
+              <button onClick={() => handleRemoveStock(stock)}>Remove</button>
             </li>
           ))}
         </ul>
+        <input
+          type="text"
+          placeholder="Add stock"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              handleAddStock(e.target.value);
+              e.target.value = '';
+            }
+          }}
+        />
       </div>
       <div className="graph">
         <h2>Graph</h2>
