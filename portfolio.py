@@ -298,6 +298,30 @@ class PortfolioApp(tk.Tk):
         }
         return portfolio_data
 
+    def get_graph_data(self, stock: str):
+        """Fetch graph data for a specific stock."""
+        period, interval = TIMEFRAMES[self.selected_tf]
+        data = yf.download(stock, period=period, interval=interval, progress=False, threads=False)
+        if data.empty:
+            raise ValueError("No data returned")
+        return data["Close"].to_json()
+
+    def add_stock(self, stock: str):
+        """Add a stock to the portfolio."""
+        if stock in self.portfolio:
+            raise ValueError(f"{stock} already in portfolio.")
+        try:
+            yf.Ticker(stock).fast_info  # simple validity check
+        except Exception:
+            raise ValueError(f"Ticker '{stock}' not found.")
+        self.portfolio.append(stock)
+
+    def remove_stock(self, stock: str):
+        """Remove a stock from the portfolio."""
+        if stock not in self.portfolio:
+            raise ValueError(f"{stock} not in portfolio.")
+        self.portfolio.remove(stock)
+
 
 if __name__ == "__main__":
     PortfolioApp().mainloop()

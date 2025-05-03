@@ -15,6 +15,7 @@ Dependencies (already in requirements.txt):
 from typing import List, Dict
 
 from fastapi import FastAPI, HTTPException, Query
+
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend.fetch_truths_api import fetch_truths       # <- your helper function
@@ -84,5 +85,37 @@ def get_portfolio_data():
     """
     try:
         return portfolio_app.get_portfolio_data()
+    except Exception as err:
+        raise HTTPException(status_code=500, detail=str(err))
+
+@app.get("/portfolio/graph", response_model=Dict)
+def get_graph_data(stock: str):
+    """
+    GET /portfolio/graph?stock={stock}  → returns graph data for a specific stock
+    """
+    try:
+        return portfolio_app.get_graph_data(stock)
+    except Exception as err:
+        raise HTTPException(status_code=500, detail=str(err))
+
+@app.post("/portfolio/add", response_model=Dict)
+def add_stock(stock: str):
+    """
+    POST /portfolio/add  → adds a stock to the portfolio
+    """
+    try:
+        portfolio_app.add_stock(stock)
+        return {"message": f"Stock {stock} added to portfolio"}
+    except Exception as err:
+        raise HTTPException(status_code=500, detail=str(err))
+
+@app.post("/portfolio/remove", response_model=Dict)
+def remove_stock(stock: str):
+    """
+    POST /portfolio/remove  → removes a stock from the portfolio
+    """
+    try:
+        portfolio_app.remove_stock(stock)
+        return {"message": f"Stock {stock} removed from portfolio"}
     except Exception as err:
         raise HTTPException(status_code=500, detail=str(err))
