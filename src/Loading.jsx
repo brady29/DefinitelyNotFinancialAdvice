@@ -6,7 +6,7 @@ export default function Loading() {
   return (
     <div className='loading'>
       <Box sx={{ display: 'flex' }}>
-        <CircularProgress color='inherit' />
+        <CircularProgress color='fail' />
       </Box>
     </div>
   );

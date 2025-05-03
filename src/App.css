@@ -7,13 +7,15 @@
 .sidebar {
   float: left;
   width: 25%;
-  border-style: solid;
-  border-color: red;
+  /* border-style: solid; */
+  /* border-color: red; */
 }
 .truth {
   overflow-y: scroll;
-  height: 70vh;
+  height: 60vh;
   border-style: solid;
+  border-color: #1515bf;
+  border-radius: 20px;
   float: right;
   width: 70%;
 }
@@ -30,7 +32,8 @@
 }
 .cards {
   max-width: fit-content;
-  margin-bottom: 40px;
+  margin-top: 10px;
+  margin-bottom: 30px;
   margin-left: auto;
   margin-right: auto;
 }

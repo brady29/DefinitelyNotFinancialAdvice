@@ -19,7 +19,30 @@ const bull = (
 
 export default function TruthTable(truths) {
 
-    const truthArray = truths["truths"]["truths"];
+    // const truthArray = truths["truths"]["truths"];
+    let date = new Date();
+    const truthArray = [
+        {
+            "created_at" : date.toJSON(),
+            "text" : "sample text",
+        },
+        {
+            "created_at" : date.toJSON(),
+            "text" : "sample text 2",
+        },
+        {
+            "created_at" : date.toJSON(),
+            "text" : "sample text 3",
+        },
+        {
+            "created_at" : date.toJSON(),
+            "text" : "sample text 4",
+        },
+        {
+            "created_at" : date.toJSON(),
+            "text" : "sample text 5",
+        }
+    ]
 
     const theme = createTheme({
         palette: {
@@ -30,25 +53,27 @@ export default function TruthTable(truths) {
     console.log(truthArray);
 
     return (
-        <div className="truth">
+        <>
             <h1>Trump's Truths</h1>
-            <ThemeProvider theme={theme}>
-            {truthArray.map((element, index) => (
-                <Card key={index} className="cards" sx={{ minWidth: 275 }}>
-                    <CardContent>
-                        <Typography gutterBottom sx={{ fontSize: 14 }}>
-                        Truth of the Day
-                        </Typography>
-                        <Typography variant="body2">
-                            {element["text"]}
-                        </Typography>
-                    </CardContent>
-                    <CardActions>
-                        <Button color="secondary" size="small">Learn More</Button>
-                    </CardActions>
-                </Card>
-            ))}
-            </ThemeProvider>
-        </div>
+            <div className="truth">
+                <ThemeProvider theme={theme}>
+                {truthArray.map((element, index) => (
+                    <Card key={index} className="cards" sx={{ minWidth: 275 }}>
+                        <CardContent>
+                            <Typography gutterBottom sx={{ fontSize: 14 }}>
+                            {Date(element["created_at"])}
+                            </Typography>
+                            <Typography variant="body2">
+                                {element["text"]}
+                            </Typography>
+                        </CardContent>
+                        <CardActions>
+                            <Button color="secondary" size="small">Learn More</Button>
+                        </CardActions>
+                    </Card>
+                ))}
+                </ThemeProvider>
+            </div>
+        </>
     );
 }
