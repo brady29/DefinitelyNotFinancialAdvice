@@ -14,10 +14,10 @@ Dependencies (already in requirements.txt):
 
 from typing import List, Dict
 
-from api_fast import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
-from fetch_truths_api import fetch_truths        # <- your helper function
+from backend.fetch_truths_api import fetch_truths       # <- your helper function
 # OPTIONAL: background live ticker
 # from threading import Thread
 # from live_ticker import main as ticker_main
@@ -54,7 +54,7 @@ app.add_middleware(
 # --------------------------------------------------------------------------- #
 
 from typing import Optional, List, Dict
-from api_fast import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query
 
 @app.get("/truth/latest", response_model=List[Dict])
 def latest_truths(
