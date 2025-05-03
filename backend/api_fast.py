@@ -32,7 +32,7 @@ app = FastAPI(
     version="0.1.0",
 )
 
-# Allow any origin during dev; lock this down in prod if you like
+# Allow any origin during dev
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
