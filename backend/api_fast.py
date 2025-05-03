@@ -18,6 +18,8 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend.fetch_truths_api import fetch_truths       # <- your helper function
+from portfolio import PortfolioApp  # Import PortfolioApp class
+
 # OPTIONAL: background live ticker
 # from threading import Thread
 # from live_ticker import main as ticker_main
@@ -69,5 +71,18 @@ def latest_truths(
     """
     try:
         return fetch_truths(n_posts=n)   # None means fetch all
+    except Exception as err:
+        raise HTTPException(status_code=500, detail=str(err))
+
+# Create an instance of PortfolioApp
+portfolio_app = PortfolioApp()
+
+@app.get("/portfolio/data", response_model=Dict)
+def get_portfolio_data():
+    """
+    GET /portfolio/data  → returns portfolio data as JSON
+    """
+    try:
+        return portfolio_app.get_portfolio_data()
     except Exception as err:
         raise HTTPException(status_code=500, detail=str(err))

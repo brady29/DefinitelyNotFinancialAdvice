@@ -1,10 +1,42 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useEffect } from 'react';
+import reactLogo from './assets/react.svg';
+import viteLogo from '/vite.svg';
+import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
+  const [portfolioData, setPortfolioData] = useState([]);
+  const [selectedStock, setSelectedStock] = useState(null);
+  const [graphData, setGraphData] = useState(null);
+
+  useEffect(() => {
+    fetchPortfolioData();
+  }, []);
+
+  const fetchPortfolioData = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/portfolio/data');
+      const data = await response.json();
+      setPortfolioData(data);
+    } catch (error) {
+      console.error('Error fetching portfolio data:', error);
+    }
+  };
+
+  const handleStockSelection = (stock) => {
+    setSelectedStock(stock);
+    fetchGraphData(stock);
+  };
+
+  const fetchGraphData = async (stock) => {
+    try {
+      const response = await fetch(`http://localhost:8000/portfolio/graph?stock=${stock}`);
+      const data = await response.json();
+      setGraphData(data);
+    } catch (error) {
+      console.error('Error fetching graph data:', error);
+    }
+  };
 
   return (
     <>
@@ -25,11 +57,29 @@ function App() {
           Edit <code>src/App.jsx</code> and save to test HMR
         </p>
       </div>
+      <div className="portfolio">
+        <h2>Portfolio</h2>
+        <ul>
+          {portfolioData.map((stock) => (
+            <li key={stock} onClick={() => handleStockSelection(stock)}>
+              {stock}
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div className="graph">
+        <h2>Graph</h2>
+        {graphData ? (
+          <img src={`data:image/png;base64,${graphData}`} alt="Stock Graph" />
+        ) : (
+          <p>Select a stock to view the graph</p>
+        )}
+      </div>
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
       </p>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

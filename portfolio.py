@@ -289,6 +289,15 @@ class PortfolioApp(tk.Tk):
             messagebox.showerror("Error", f"Portfolio calculation failed: {exc}")
             self.status_var.set("Error – see dialog")
 
+    def get_portfolio_data(self):
+        """Fetch portfolio data as a JSON object."""
+        portfolio_data = {
+            "portfolio": self.portfolio,
+            "selected_ticker": self.selected_ticker,
+            "selected_tf": self.selected_tf,
+        }
+        return portfolio_data
+
 
 if __name__ == "__main__":
     PortfolioApp().mainloop()
