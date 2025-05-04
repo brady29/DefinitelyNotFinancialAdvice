@@ -8,32 +8,30 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { blue } from '@mui/material/colors';
 
 export default function TruthTable(props) {
-    let truthArray = props.truths;
-    // let date = new Date();
-    // const truthArray = [
-    //     {
-    //         "created_at" : date.toJSON(),
-    //         "text" : "sample text",
-    //     },
-    //     {
-    //         "created_at" : date.toJSON(),
-    //         "text" : "sample text 2",
-    //     },
-    //     {
-    //         "created_at" : date.toJSON(),
-    //         "text" : "sample text 3 with lots of shit im just testing the styling and what not of this thannnggggggg i gotta keep writing shit in order to mfing fill up the damn fucking shit ass space hijo de tu chingada madre este proyecto es la verga neta weyyyy",
-    //     },
-    //     {
-    //         "created_at" : date.toJSON(),
-    //         "text" : "sample text 4",
-    //     },
-    //     {
-    //         "created_at" : date.toJSON(),
-    //         "text" : "sample text 5",
-    //     }
-    // ]
-
-    const [truths, updateTruths] = React.useState(truthArray);
+    let truths = props.truths;
+    let date = new Date();
+    truths = [
+        {
+            "created_at" : date.toJSON(),
+            "text" : "sample text",
+        },
+        {
+            "created_at" : date.toJSON(),
+            "text" : "sample text 2",
+        },
+        {
+            "created_at" : date.toJSON(),
+            "text" : "sample text 3 with lots of shit im just testing the styling and what not of this thannnggggggg i gotta keep writing shit in order to mfing fill up the damn fucking shit ass space hijo de tu chingada madre este proyecto es la verga neta weyyyy",
+        },
+        {
+            "created_at" : date.toJSON(),
+            "text" : "sample text 4",
+        },
+        {
+            "created_at" : date.toJSON(),
+            "text" : "sample text 5",
+        }
+    ]
 
     const theme = createTheme({
         palette: {
@@ -51,7 +49,7 @@ export default function TruthTable(props) {
                     <Card key={index} className="cards" sx={{ minWidth: 275 }}>
                         <CardContent>
                             <Typography gutterBottom sx={{ fontSize: 14 }}>
-                            {Date(truth["created_at"])}
+                            {new Date(truth["created_at"]).toLocaleString()}
                             </Typography>
                             <Typography variant="body2">
                                 {truth["text"]}
