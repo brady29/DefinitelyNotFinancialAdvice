@@ -21,7 +21,7 @@ $(document).ready(function () {
 
   $.ajax({
   	type: 'GET',
-  	// url: 'http://127.0.0.1:8000/truth/latest\?n\=10',
+  	url: 'http://127.0.0.1:8000/truth/latest\?n\=10',
   }).done(function(data) {
   	// Write result from server to website
   	truths = data;
